@@ -26,8 +26,13 @@
                             </h5>
                             <% if (item.Poster == "N/A") { %>
                                 <img src="img/movie-poster.png" alt="<%= item.Title %>" width="300" height="400" />
+
+                                <input id="movie-saved" type="checkbox" name="movie-saved" value="<% item.Title %>" onclick="save()"><label for="<% item.Title %>">Save to watchlist</label>
+
                                 <% } else { %>
                                     <img src="<%= item.Poster %>" alt="<%= item.Title %>" />
+
+                                    <input id="movie-saved" type="checkbox" name="movie-saved" value="<% item.Title %>" onclick="save()"><label for="<% item.Title %>">Save to watchlist</label>
                                     <% } %>
                         </div>
                         <% }) %>
