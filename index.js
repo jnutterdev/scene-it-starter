@@ -1,63 +1,47 @@
-// FUNCTION FOR GENERATING MOVIE CARDS
-const apikey = process.env.APIKEY;
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors')
+const favicon = require('serve-favicon');
+const bodyParser = require('body-parser');
+const app = express();
+const expressLayouts = require('express-ejs-layouts');
+const PORT = process.env.PORT || 8080;
+const path = require('path');
+const keys = require('./configs/keys');
 
-var movieData = [];
+app.use(cors());
 
-function renderMovies() {
-    var movieHTML = "";
+app.use(bodyParser.json());
 
-    // LISTEN FOR EVENT, SHOW MOVIES
-    document.getElementById("search-form").addEventListener("submit", function(e) {
-        e.preventDefault(); // PREVENTS PAGE FROM RELOADING AFTER CLICKING SUBMIT
+require('./models/Watchlist');
+require('./utils/redis');
 
-        // CREATES SEARCH STRING VARIABLES, ENCODES QUERY TO MAKE IT WEB FRIENDLY (ENCODES SPACES, ETC.)
-        var searchString = document.getElementById("search-finder").value;
-        var urlEncodedSearchString = encodeURIComponent(searchString);
+mongoose.connect(keys.MONGO_URI, { 
+    useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true
+});
 
-        // USE AXIOS FOR SUBMITTING QUERY
-        axios.get(`http://www.omdbapi.com/?apikey=${apikey}&s=` + urlEncodedSearchString)
-            .then(response => {
+app.use(express.urlencoded({
+    extended: true
+}));
 
-                movieData = response.data.Search;
-                movieData.map(function(currentMovie) {
+// static files
+app.use(favicon(__dirname + '/public/img/favicon.ico'));
+app.use(express.static('public'));
 
-                    // RENDER MOVIE CARD WITH VARIABLES
-                    movieHTML += `
-                        <div class="movie card">
-                        <img class="card-img-top" src="${currentMovie.Poster}" alt="${currentMovie.Title}">
-                        <div class="card-img-bottom">
-                            <h4 class="card-title">${currentMovie.Title}</h4>
-                            <p class="card-text">${currentMovie.Year}</p>
-                            <a href="#" class="btn btn-info stretched-link" onclick="saveToWatchlist('${currentMovie.imdbID}')">Add</a> </div> 
-                            </div>`;
+// templating engines
+app.use(expressLayouts);
+app.set('layout', './layouts/home');
+app.set('view engine', 'ejs');
 
-                });
+// set main movie routes
+const movieRouter = require('./routes/routes');
+app.use('/', movieRouter);
 
-                document.getElementById("movie-cards").innerHTML = movieHTML;
-            });
-
-    })
-
-}
-
-// SAVES MOVIE SELECTIONS TO WATCHLIST USING ADD BUTTON
-function saveToWatchlist(imdbID) {
-
-    var movie = movieData.find(function(currentMovie) {
-        return currentMovie.imdbID == imdbID;
-    });
-
-    var watchlistJSON = localStorage.getItem("watchlist");
-    var watchlist = JSON.parse(watchlistJSON);
-
-    if (watchlist == null) {
-        watchlist = [];
-    }
-    watchlist.push(movie);
-    watchlistJSON = JSON.stringify(watchlist);
-    localStorage.setItem("watchlist", watchlistJSON);
-
-}
-
-// LOAD FUNCTIONS ON PAGE LOAD
-document.addEventListener('DOMContentLoaded', renderMovies);
+// main listening
+app.listen(PORT, () => {
+    console.log('Server connected at:', PORT);
+});

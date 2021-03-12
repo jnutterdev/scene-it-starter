@@ -1,0 +1,66 @@
+body {
+    background-color: #fff;
+    /* background-image: url('../img/memphis.png'); */
+    font-family: 'Didact Gothic', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: 'Francois One', sans-serif;
+}
+
+.header h2 {
+    color: #E76F51;
+}
+
+.header p {
+    color: #264653;
+}
+
+.results {
+    margin-top: 20px;
+}
+
+.card-img-overlay {
+    color: black;
+}
+
+.card-img-bottom {
+    padding: 10px 20px;
+}
+
+.movie {
+    width: 25%;
+}
+
+.movies-container {
+    margin: 50px auto;
+}
+
+.footer {
+    margin: 50px auto;
+}
+
+.navbar {
+    background-color: #FFE19C;
+}
+
+.card-layouts {
+    display: grid;
+    grid-column-gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+.card-container {
+    display: inline-block;
+    margin: 30px;
+}
+
+img {
+    max-width: 300px;
+    max-height: 400px;
+    display: block;
+}
